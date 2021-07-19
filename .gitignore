@@ -1,0 +1,7 @@
+/node_modules
+
+/instantclient_19_10
+
+package-lock.json
+
+.env

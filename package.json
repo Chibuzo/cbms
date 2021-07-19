@@ -1,0 +1,28 @@
+{
+    "name": "starwars",
+    "version": "1.0.0",
+    "description": "A simple api for fetching star wars data",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Chibuzo Okolo",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^0.19.0",
+        "chai": "^4.2.0",
+        "chai-http": "^4.3.0",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "express-validator": "^6.3.0",
+        "mocha": "^6.2.2",
+        "mysql": "^2.17.1",
+        "mysql2": "^2.0.1",
+        "oracledb": "^5.1.0",
+        "redis": "^2.8.0",
+        "sequelize": "^5.21.2",
+        "sequelize-cli": "^5.5.1",
+        "swagger-jsdoc": "^3.5.0",
+        "swagger-ui-express": "^4.1.2"
+    }
+}
