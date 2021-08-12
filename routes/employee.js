@@ -3,7 +3,7 @@ const { fetchEmployees } = require('../services/employeeService');
 
 routes.get('/', async (req, res, next) => {
     try {
-        const { employees, metadata } = await fetchEmployees(parseInt(req.query.page, 10));
+        const { employees, metadata } = await fetchEmployees(parseInt(req.query.page || 1, 10));
         res.status(200).json({ status: true, data: { employees, metadata } });
     } catch (err) {
         console.log(err)
