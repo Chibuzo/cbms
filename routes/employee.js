@@ -7,7 +7,6 @@ routes.get('/', async (req, res, next) => {
         const { employees, metadata } = await fetchEmployees(parseInt(page || 1, 10), month, year);
         res.status(200).json({ status: true, data: { employees, metadata } });
     } catch (err) {
-        console.log(err)
         res.status(err.statusCode || 500).json({ status: false, message: err.message });
     }
 });
