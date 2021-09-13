@@ -25,21 +25,22 @@ const fetchEmployees = async (page = 1, month, year) => {
     query_params.push(offset, limit);
 
     const query = `
-        select pay.full_name, per.sex "Gender", per.national_identifier "ID No", per.employee_number, ass.grade_id "Grade Code", grd.name "Grade Name",
-        ele.element_type_id "Pay Code", ele.element_name "PayCode Name",ele.attribute1 "Cost Code" ,pay.credit_amount "Credit Amount", pay.debit_amount
-        "Debit Amount", ass.effective_start_date "Promotion Date", ass.effective_start_date "End Period", ass.effective_start_date "Notching Month",
-        ass.job_id "Job ID", job.name "Position Name",
+        select pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", per.employee_number, ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
+        ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
+        CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
+        ass.effective_start_date "PROMOTION_DATE", ass.effective_start_date "END_PERIOD", ass.effective_start_date "NOTCHING_MONTH",
+        ass.job_id "JOB_ID", job.name "POSITION_NAME",
         decode (ass.employment_category , 'PERMP', 'Permanent and Pensionable','CONP' , 'Contract and Pensionable','CON','Contract',
-        'PEN','Pensioners','TEMP','Temporary') "Posiition Type", to_char(pay.effective_date, 'YYYY') "Payroll Year", to_char(pay.effective_date, 'MON') "Payroll Month",
-        pay.concatenated_segments "CONCATENATED SEGMENT", substr(pay.segment2, 0,3) "Head",pay.segment4 "Account Type",
-        substr(pay.segment2, 4,2) "Cost Centre",
-        substr(pay.segment2, 6,2) "Sub Cost Centre",
-        substr(pay.segment3, 4,2) "Programme",
-        substr(pay.segment3, 6,2) "Sub Programme",
-        pay.segment5 "Fund Source",
-        pay.segment6 "Donor", pay.segment7 "Project Code",pay.segment8 "Activity",pay.segment9 "Economic Indicator",pay.segment10 "Location",
+        'PEN','Pensioners','TEMP','Temporary') "POSITION_TYPE", to_char(pay.effective_date, 'YYYY') "PAYROLL_YEAR", to_char(pay.effective_date, 'MON') "PAYROLL_MONTH",
+        pay.concatenated_segments "CONCATENATED_SEGMENT", substr(pay.segment2, 0,3) "HEAD", pay.segment4 "ACCOUNT_TYPE",
+        substr(pay.segment2, 4,2) "COST_CENTRE",
+        substr(pay.segment2, 6,2) "SUB_COST_CENTRE",
+        substr(pay.segment3, 4,2) "PROGRAMME",
+        substr(pay.segment3, 6,2) "SUB_PROGRAMME",
+        pay.segment5 "FUND_SOURCE",
+        pay.segment6 "DONOR", pay.segment7 "PROJECT_CODE",pay.segment8 "ACTIVITY", pay.segment9 "ECONOMIC_INDICATOR",pay.segment10 "LOCATION",
         pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment3, 0,3) || '|' || substr(pay.segment3, 4,2)
-        || '|' || pay.segment4 || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLAccount"
+        || '|' || pay.segment4 || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
         FROM pay_costing_details_v pay
         join per_all_people_f per on (pay.person_id = per.person_id)
         join per_all_assignments_f ass on (ass.assignment_id=pay.assignment_id)
