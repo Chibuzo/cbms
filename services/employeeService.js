@@ -26,6 +26,7 @@ const fetchEmployees = async (page = 1, month, year) => {
 
     const query = `
         select pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", per.employee_number, ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
+        spi.sequence "GRADESTEP/NOTCH",
         ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
         CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
         to_char(ass.effective_start_date, 'DD-MON') || '-' || extract(year from sysdate) "PROMOTION_DATE",
@@ -49,6 +50,8 @@ const fetchEmployees = async (page = 1, month, year) => {
         join pay_element_types_f ele on (ele.element_type_id=pay.element_type_id)
         join per_grades grd on (grd.grade_id = ass.grade_id)
         join per_jobs job on (job.job_id = ass.job_id)
+        join per_spinal_point_placements_f spn on (spn.assignment_id = ass.assignment_id)
+        join per_spinal_point_steps_f spi on (spi.step_id = spn.step_id)
         where pay.segment10 is not null ${date_query}
         OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY`;
 
