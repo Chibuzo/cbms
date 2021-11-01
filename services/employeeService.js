@@ -20,15 +20,16 @@ const fetchEmployees = async (page = 1, month, year) => {
         date_query += "AND to_char(pay.effective_date, 'YY') = :year ";
         query_params.push(year);
     }
-    const limit = 100;
+    const limit = 500;
     const offset = page === 1 ? 1 : (page - 1) * limit;
     query_params.push(offset, limit);
+    // CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
 
     const query = `
         select pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", per.employee_number, ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
         spi.sequence "NOTCH",
         ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
-        CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
+        pay.credit_amount "AMOUNT",
         to_char(ass.effective_start_date, 'DD-MON') || '-' || extract(year from sysdate) "PROMOTION_DATE",
         to_char(pay.effective_date, 'DD/MM/YYYY') "END_PERIOD",
         to_char(ass.effective_start_date, 'MON') "NOTCHING_MONTH",
