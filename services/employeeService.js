@@ -54,7 +54,7 @@ const fetchEmployees = async (page = 1, month, year) => {
         join per_jobs job on (job.job_id = ass.job_id)
         join per_spinal_point_placements_f spn on (spn.assignment_id = ass.assignment_id)
         join per_spinal_point_steps_f spi on (spi.step_id = spn.step_id)
-        where pay.segment10 is not null ${date_query}
+        where pay.segment10 is not null ${date_query} AND ele.attribute1 like '1%'
         OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY`;
 
     const db = await getConnection();
