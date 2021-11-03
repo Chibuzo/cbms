@@ -27,9 +27,9 @@ const fetchEmployees = async (page = 1, month, year) => {
 
     const query = `
         select pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", per.employee_number, ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
-        spi.sequence "NOTCH",
+        spi.sequence "GradeStep/Notch",
         ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
-        pay.credit_amount "AMOUNT",
+        CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
         to_char(ass.effective_start_date, 'DD-MON') || '-' || extract(year from sysdate) "PROMOTION_DATE",
         to_char(pay.effective_date, 'DD/MM/YYYY') "END_PERIOD",
         to_char(ass.effective_start_date, 'MON') "NOTCHING_MONTH",
@@ -43,9 +43,8 @@ const fetchEmployees = async (page = 1, month, year) => {
         substr(pay.segment3, 6,2) "SUB_PROGRAMME",
         pay.segment5 "FUND_SOURCE",
         pay.segment6 "DONOR", pay.segment7 "PROJECT_CODE",pay.segment8 "ACTIVITY", pay.segment9 "ECONOMIC_INDICATOR",pay.segment10 "LOCATION",
-        pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || pay.segment4 || '|' || substr(pay.segment2, 3,2) || '|' || substr(pay.segment2, 5,2)
-        || '|' || substr(pay.segment3, 4,2) || '|' || substr(pay.segment3, 6,2)
-        || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
+        pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment3, 0,3) || '|' || substr(pay.segment3, 4,2)
+        || '|' || pay.segment4 || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
         FROM pay_costing_details_v pay
         join per_all_people_f per on (pay.person_id = per.person_id)
         join per_all_assignments_f ass on (ass.assignment_id=pay.assignment_id)
