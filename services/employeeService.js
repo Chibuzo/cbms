@@ -25,7 +25,8 @@ const fetchEmployees = async (page = 1, month, year) => {
     query_params.push(offset, limit);
 
     const query = `
-        select pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", per.employee_number, ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
+        select distinct per.employee_number,
+        pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
         spi.sequence "NOTCH",
         ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
         CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
@@ -44,15 +45,23 @@ const fetchEmployees = async (page = 1, month, year) => {
         pay.segment6 "DONOR", pay.segment7 "PROJECT_CODE",pay.segment8 "ACTIVITY", pay.segment9 "ECONOMIC_INDICATOR",pay.segment10 "LOCATION",
         pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment3, 0,3) || '|' || substr(pay.segment3, 4,2)
         || '|' || pay.segment4 || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
-        FROM pay_costing_details_v pay
-        join per_all_people_f per on (pay.person_id = per.person_id)
+        FROM per_all_people_f per
+        join per_all_assignments_f ass on (per.person_id=ass.person_id)--and per.employee_number=ass.assignment_number)
+        join pay_costing_details_v pay on (pay.person_id=ass.person_id)-- and pay.employee_number=ass.assignment_number)
         join per_all_assignments_f ass on (ass.assignment_id=pay.assignment_id)
         join pay_element_types_f ele on (ele.element_type_id=pay.element_type_id)
         join per_grades grd on (grd.grade_id = ass.grade_id)
         join per_jobs job on (job.job_id = ass.job_id)
         join per_spinal_point_placements_f spn on (spn.assignment_id = ass.assignment_id)
         join per_spinal_point_steps_f spi on (spi.step_id = spn.step_id)
-        where pay.segment10 is not null ${date_query} AND ele.attribute1 like '1%'
+        WHERE pay.segment10 is not null AND ele.attribute1 like '1%'
+        AND to_char(pay.effective_date, 'MON') = :month
+        AND to_char(pay.effective_date, 'YY') = :year
+        AND ass.EFFECTIVE_END_DATE > sysdate
+        AND per.effective_end_date>sysdate
+        AND spn.effective_end_date>sysdate
+        AND spi.effective_end_date>sysdate
+        order by per.employee_number
         OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY`;
 
     const db = await getConnection();
