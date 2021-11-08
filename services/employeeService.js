@@ -25,7 +25,7 @@ const fetchEmployees = async (page = 1, month, year) => {
     query_params.push(offset, limit);
 
     const query = `
-        SELECT per.employee_number,
+        SELECT DISTINCT per.employee_number,
         pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
         spi.sequence "NOTCH",
         ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
