@@ -21,7 +21,7 @@ const fetchEmployees = async (page = 1, month, year) => {
         query_params.push(year);
     }
     const limit = 500;
-    const offset = page === 1 ? 1 : (page - 1) * limit;
+    const offset = page === 1 ? 0 : (page - 1) * limit;
     query_params.push(offset, limit);
 
     const query = `
