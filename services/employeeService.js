@@ -25,7 +25,7 @@ const fetchEmployees = async (page = 1, month, year) => {
     query_params.push(offset, limit);
 
     const query = `
-        SELECT DISTINCT per.PERSON_ID, ass.ASSIGNMENT_ID, per.employee_number,
+        SELECT DISTINCT per.employee_number,
         pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
         spi.sequence "NOTCH",
         ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
@@ -43,8 +43,8 @@ const fetchEmployees = async (page = 1, month, year) => {
         substr(pay.segment3, 6,2) "SUB_PROGRAMME",
         pay.segment5 "FUND_SOURCE",
         pay.segment6 "DONOR", pay.segment7 "PROJECT_CODE",pay.segment8 "ACTIVITY", pay.segment9 "ECONOMIC_INDICATOR",pay.segment10 "LOCATION",
-        pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment2, 6,2) || '|' || substr(pay.segment3, 6,2) || '|' || substr(pay.segment3, 4,2)
-        || '|' || pay.segment4 || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
+        pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || pay.segment4 || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment2, 6,2) || '|' || substr(pay.segment3, 6,2) || '|' || substr(pay.segment3, 4,2)
+        || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
         FROM per_all_people_f per
         join per_all_assignments_f ass on (per.person_id=ass.person_id)
         join pay_costing_details_v pay on (pay.person_id=ass.person_id)
