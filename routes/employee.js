@@ -3,9 +3,11 @@ const { fetchEmployees, fetchEmployeesByGradeScale } = require('../services/empl
 
 routes.get('/', async (req, res, next) => {
     try {
-        const { page, month, year } = req.query;
-        const { employees, metadata } = await fetchEmployees(parseInt(page || 1, 10), month, year);
-        res.status(200).json({ status: true, data: { employees, metadata } });
+        const { page = 0, month, year, head } = req.query;
+        const { employees, metadata } = await fetchEmployees(parseInt(page, 10), month, year, head);
+        let data = { employees };
+        if (metadata) data.metadata = metadata;
+        res.status(200).json({ status: true, data });
     } catch (err) {
         res.status(err.statusCode || 500).json({ status: false, message: err.message });
     }

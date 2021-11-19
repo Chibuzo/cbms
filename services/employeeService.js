@@ -1,10 +1,10 @@
 const { getConnection } = require('../config/dbconnection');
 const { ErrorHandler } = require('../helpers/errorHandler');
 
-const fetchEmployees = async (page = 1, month, year) => {
-    if (!Number.isInteger(page) || page < 1) {
-        throw new ErrorHandler(400, 'Invalid page. Page must be a valid integer, greater 0');
-    }
+const fetchEmployees = async (page, month, year, head) => {
+    // if (!Number.isInteger(page) || page < 1) {
+    //     throw new ErrorHandler(400, 'Invalid page. Page must be a valid integer, greater 0');
+    // }
 
     const query_params = [];
     let date_query = '';
@@ -20,11 +20,17 @@ const fetchEmployees = async (page = 1, month, year) => {
         date_query += "AND to_char(pay.effective_date, 'YY') = :year ";
         query_params.push(year);
     }
+    if (head) {
+        date_query += "AND substr(pay.segment2, 0, 3) = :head ";
+        query_params.push(head);
+    }
     const limit = 500;
-    const offset = page === 1 ? 0 : ((page - 1) * limit) + 1;
-    query_params.push(offset, limit);
+    if (page) {
+        const offset = page === 1 ? 0 : ((page - 1) * limit) + 1;
+        query_params.push(offset, limit);
+    }
 
-    const query = `
+    let query = `
         SELECT DISTINCT per.employee_number,
         pay.full_name, per.sex "GENDER", per.national_identifier "ID_NO", ass.grade_id "GRADE_CODE", grd.name "GRADE_NAME",
         spi.sequence "NOTCH",
@@ -57,24 +63,25 @@ const fetchEmployees = async (page = 1, month, year) => {
         WHERE pay.segment10 is not null ${date_query} AND ele.attribute1 like '1%'
         AND ass.EFFECTIVE_END_DATE > sysdate
         AND per.effective_end_date > sysdate
-        AND spn.effective_end_date > sysdate 
-        ORDER BY per.employee_number 
-        OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY`;
+        AND spn.effective_end_date > sysdate`;
+
+    query += ' ORDER BY per.employee_number';
+    if (page) query += ' OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY';
 
     const db = await getConnection();
     const [result, total_count] = await Promise.all([
         db.execute(query, query_params),
-        countRecords(date_query, month, year)
+        countRecords(date_query, month, year, head, page)
     ]);
     const employees = result.rows;
-
-    const metadata = {
+    console.log(employees)
+    const metadata = page ? {
         page,
         limit,
         page_count: result.rows.length,
         total_pages: Math.ceil(total_count / limit),
         total_count
-    }
+    } : null;
 
     if (!employees) throw new ErrorHandler(404, 'Employees not found');
 
@@ -99,8 +106,9 @@ const fetchEmployeesByGradeScale = async () => {
     return result.rows;
 }
 
-const countRecords = async (date_query, month, year) => {
-    const query = `
+const countRecords = async (date_query, month, year, head, page) => {
+    if (page == null) return 0;
+    let query = `
         select COUNT(*) num
         FROM
         (SELECT DISTINCT per.employee_number,
@@ -140,6 +148,7 @@ const countRecords = async (date_query, month, year) => {
     const query_params = [];
     if (month) query_params.push(month.toUpperCase());
     if (year) query_params.push(year);
+    if (head) query_params.push(head);
 
     const db = await getConnection();
     const result = await db.execute(query, query_params);
