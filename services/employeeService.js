@@ -81,6 +81,24 @@ const fetchEmployees = async (page = 1, month, year) => {
     return { employees, metadata };
 };
 
+const fetchEmployeesByGradeScale = async () => {
+    const query = `
+        select a.name "Salary Classification", b.value "Salary",
+        CASE WHEN b.effective_end_date>sysdate THEN 'Y' ELSE 'N' END AS ACTIVE,
+        b.last_updated_by,b.last_update_date,
+        d.name grade, b.sequence "Increment"
+        FROM pay_rates a, pay_grade_rules_f b, per_grade_spines_f c,per_grades d
+        WHERE a.rate_id = b.rate_id
+        and a.parent_spine_id = c.parent_spine_id
+        and c.grade_id = d.grade_id
+        and sysdate between b.effective_start_date and b.effective_end_date
+        order by a.name, d.name, b.sequence`;
+
+    const db = await getConnection();
+    const result = await db.execute(query);
+    return result.rows;
+}
+
 const countRecords = async (date_query, month, year) => {
     const query = `
         select COUNT(*) num
@@ -131,5 +149,6 @@ const countRecords = async (date_query, month, year) => {
 
 
 module.exports = {
-    fetchEmployees
+    fetchEmployees,
+    fetchEmployeesByGradeScale
 }
