@@ -52,18 +52,18 @@ const fetchEmployees = async (page, month, year, head) => {
         pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || pay.segment4 || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment2, 6,2) || '|' || substr(pay.segment3, 6,2) || '|' || substr(pay.segment3, 4,2)
         || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
         FROM per_all_people_f per
-        join per_all_assignments_f ass on (per.person_id=ass.person_id)
-        join pay_costing_details_v pay on (pay.person_id=ass.person_id)
-        join per_all_assignments_f ass on (ass.assignment_id=pay.assignment_id)
-        join pay_element_types_f ele on (ele.element_type_id=pay.element_type_id)
-        join per_grades grd on (grd.grade_id = ass.grade_id)
-        join per_jobs job on (job.job_id = ass.job_id)
-        join per_spinal_point_placements_f spn on (spn.assignment_id = ass.assignment_id)
-        join per_spinal_point_steps_f spi on (spi.step_id = spn.step_id)
+        JOIN per_all_assignments_f ass on (per.person_id=ass.person_id)
+        JOIN pay_costing_details_v pay on (pay.person_id=ass.person_id)
+        JOIN per_all_assignments_f ass on (ass.assignment_id=pay.assignment_id)
+        JOIN pay_element_types_f ele on (ele.element_type_id=pay.element_type_id)
+        JOIN per_grades grd on (grd.grade_id = ass.grade_id)
+        JOIN per_jobs job on (job.job_id = ass.job_id)
+        JOIN per_spinal_point_placements_f spn on (spn.assignment_id = ass.assignment_id)
+        JOIN per_spinal_point_steps_f spi on (spi.step_id = spn.step_id)
         WHERE pay.segment10 is not null ${date_query} AND ele.attribute1 like '1%'
-        AND ass.EFFECTIVE_END_DATE > sysdate
-        AND per.effective_end_date > sysdate
-        AND spn.effective_end_date > sysdate`;
+        AND to_char(ass.effective_end_date, 'DD-MON-YY') = '31-DEC-12'
+        AND to_char(per.effective_end_date, 'DD-MON-YY') = '31-DEC-12'
+        AND to_char(spn.effective_end_date, 'DD-MON-YY') = '31-DEC-12'`;
 
     query += ' ORDER BY per.employee_number';
     if (page) query += ' OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY';
@@ -74,7 +74,7 @@ const fetchEmployees = async (page, month, year, head) => {
         countRecords(date_query, month, year, head, page)
     ]);
     const employees = result.rows;
-    console.log(employees)
+
     const metadata = page ? {
         page,
         limit,
