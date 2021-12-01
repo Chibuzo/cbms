@@ -49,8 +49,8 @@ const fetchEmployees = async (page, month, year, head) => {
         substr(pay.segment3, 6,2) "SUB_PROGRAMME",
         pay.segment5 "FUND_SOURCE",
         pay.segment6 "DONOR", pay.segment7 "PROJECT_CODE",pay.segment8 "ACTIVITY", pay.segment9 "ECONOMIC_INDICATOR",pay.segment10 "LOCATION",
-        pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || pay.segment4 || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment2, 6,2) || '|' || substr(pay.segment3, 6,2) || '|' || substr(pay.segment3, 4,2)
-        || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT"
+        pay.segment9 || '|' || substr(pay.segment2, 0,3) || '|' || pay.segment4 || '|' || substr(pay.segment2, 4,2) || '|' || substr(pay.segment2, 6,2) || '|' || substr(pay.segment3, 4,2) || '|' || substr(pay.segment3, 6,2)
+        || '|' || pay.segment5 || '|' || pay.segment6 || '|' || pay.segment7 || '|' || pay.segment8 || '|' || pay.segment10 "GLACCOUNT" 
         FROM per_all_people_f per
         JOIN per_all_assignments_f ass on (per.person_id=ass.person_id)
         JOIN pay_costing_details_v pay on (pay.person_id=ass.person_id)
