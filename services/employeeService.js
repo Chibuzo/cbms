@@ -36,7 +36,7 @@ const fetchEmployees = async (page, month, year, head) => {
         spi.sequence "NOTCH",
         ele.element_type_id "PAY_CODE", ele.element_name "PAYCODE_NAME",ele.attribute1 "COST_CODE",
         CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
-        to_char(ADD_MONTHS(per.effective_start_date, 1), 'DD-MON') || '-' || extract(year from sysdate) "PROMOTION_DATE",
+        to_char(ADD_MONTHS(ass.effective_start_date, 1), 'DD-MON') || '-' || extract(year from sysdate) "PROMOTION_DATE",
         to_char(pay.effective_date, 'DD/MM/YYYY') "END_PERIOD",
         to_char(per.original_date_of_hire, 'MON') "NOTCHING_MONTH",
         ass.job_id "JOB_ID", job.name "POSITION_NAME",
