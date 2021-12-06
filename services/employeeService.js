@@ -38,7 +38,7 @@ const fetchEmployees = async (page, month, year, head) => {
         CASE WHEN pay.debit_amount = 0 THEN pay.credit_amount ELSE pay.debit_amount END AS AMOUNT,
         to_char(ass.effective_start_date, 'DD-MON') || '-' || extract(year from sysdate) "PROMOTION_DATE",
         to_char(pay.effective_date, 'DD/MM/YYYY') "END_PERIOD",
-        to_char(per.original_date_of_hire, 'MON') "NOTCHING_MONTH",
+        to_char(spn.effective_start_date, 'MON') "NOTCHING_MONTH",
         ass.job_id "JOB_ID", job.name "POSITION_NAME",
         decode (ass.employment_category , 'PERMP', 'Permanent and Pensionable','CONP' , 'Contract and Pensionable','CON','Contract',
         'PEN','Pensioners','TEMP','Temporary') "POSITION_TYPE", to_char(pay.effective_date, 'YYYY') "PAYROLL_YEAR", to_char(pay.effective_date, 'MM') "PAYROLL_MONTH",
