@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const apiRoutes = require('./routes');
+const userRoutes = require('./routes/user');
 const { handleError, ErrorHandler } = require('./helpers/errorHandler');
 
 app.use(express.json());
@@ -12,6 +13,7 @@ app.get('/', (req, res) => {
 
 //app.use('/api', header_validation, apiRoutes);
 app.use('/api', apiRoutes);
+app.use('/api/users', userRoutes);
 
 // catch 404 routes
 app.use((req, res, next) => {

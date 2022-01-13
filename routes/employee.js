@@ -1,7 +1,9 @@
 const routes = require('express').Router();
 const { fetchEmployees, fetchEmployeesByGradeScale } = require('../services/employeeService');
+const verifyToken = require('../middlewares/verifyToken');
 
-routes.get('/', async (req, res, next) => {
+
+routes.get('/', verifyToken, async (req, res, next) => {
     try {
         const { page = 0, month, year, head } = req.query;
         const { employees, metadata } = await fetchEmployees(parseInt(page, 10), month, year, head);
@@ -13,7 +15,7 @@ routes.get('/', async (req, res, next) => {
     }
 });
 
-routes.get('/gradescale', async (req, res, next) => {
+routes.get('/gradescale', verifyToken, async (req, res, next) => {
     try {
         const employees = await fetchEmployeesByGradeScale();
         res.status(200).json({ status: true, data: { employees } });

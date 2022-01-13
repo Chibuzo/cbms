@@ -17,12 +17,12 @@ const APIRequest = api_url => {
         }
     }
 
-    const post = (url, body = {}) => {
+    const post = async (url, body = {}) => {
         try {
             const response = await axios.post(url, body, option);
             return response.data;
         } catch (err) {
-            throw new ErrorHandler(err.response.status, err.response.data.detail);
+            throw new ErrorHandler(err.response.status, err.response.data.message);
         }
     }
 
