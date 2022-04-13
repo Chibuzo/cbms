@@ -2,7 +2,7 @@ const oracleDb = require('oracledb');
 const { config } = require('../config/config');
 
 oracleDb.outFormat = oracleDb.OUT_FORMAT_OBJECT;
-oracleDb.initOracleClient({ libDir: 'C:\\nid\\instantclient_19_10' });
+//oracleDb.initOracleClient({ libDir: 'C:\\nid\\instantclient_19_10' });
 
 (async function () {
     try {
