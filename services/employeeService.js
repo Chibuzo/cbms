@@ -75,6 +75,8 @@ const fetchEmployees = async (page, month, year, head) => {
     ]);
     const employees = result.rows;
 
+    await db.close();
+
     const metadata = page ? {
         page,
         limit,
@@ -103,6 +105,7 @@ const fetchEmployeesByGradeScale = async () => {
 
     const db = await getConnection();
     const result = await db.execute(query);
+    await db.close();
     return result.rows;
 }
 
@@ -153,6 +156,7 @@ const countRecords = async (date_query, month, year, head, page) => {
     const db = await getConnection();
     const result = await db.execute(query, query_params);
     const count = result.rows[0];
+    await db.close();
     return count.NUM;
 }
 
